@@ -1,0 +1,37 @@
+/*content*/
+.content{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 251px;
+	
+	.ace_cursor{
+    -webkit-transition:left 0.1s;
+  }
+	
+	.image-container{
+  	position: absolute;
+  	left: 0px;
+  	top: 0px;
+  	right: 0px;
+  	bottom: 0px;
+  	background: #fff;
+  	z-index: 10;
+  	text-align: center;
+  	padding-top: 10px;
+  	overflow: auto;
+  }
+  .image-container img{
+  	max-width: 100%;
+  }
+  
+  #editor{
+    position: absolute;
+    top: 0px;
+    right: 0;
+    bottom: 0px;
+    left: 0px;
+  }
+  
+}

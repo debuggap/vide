@@ -1,0 +1,60 @@
+.filter-files-selection {
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  position: fixed;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.6);
+  
+  .filter-files {
+    width: 500px;
+    position: absolute;
+    z-index: 500;
+    left: 50%;
+    margin-left: -250px;
+    background-color: #2F3129;
+    padding:5px;
+    border-radius: 5px;
+    top:50px;
+    color:#ccc;
+    
+    input {
+      background-color:inherit;
+      color:inherit;
+      border-color: #3870bf;
+    }
+    
+    ul {
+      margin-top: 5px;
+      max-height: 255px;
+      overflow:auto;
+    }
+    
+    li {
+      padding: 0px 10px;
+      border-top: 1px dotted rgb(191, 199, 217);
+      line-height: 50px;
+      cursor:pointer;
+      
+      h3 {
+        line-height:25px;
+        font-weight:normal;
+      }
+      
+      div{
+        overflow: hidden;
+        line-height:25px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .highlight {
+        color:#3870bf;
+      }
+    }
+    
+    li.active {
+      background-color: #49483e;
+    }
+  }
+}

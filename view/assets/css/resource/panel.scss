@@ -1,0 +1,105 @@
+@import '../config';
+
+.resource-panel{
+	position: absolute;
+	left: 0px;
+	top:0px;
+	width: 250px;
+	bottom: 0px;
+	overflow: auto;
+	border-right: 1px solid #ccc;
+	z-index:20;
+	
+	&-hidden {
+	  transform: translateX(-1500px) !important;
+	}
+}
+
+/* active and all resource-panel*/
+.active-resource-panel,.all-resource-panel{
+    width: 100%;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    top: 20px;
+    overflow: auto;
+    -webkit-transition:-webkit-transform 0.2s;
+    display:block;
+}
+
+/* active resource-panel*/
+.active-resource-panel {
+  
+  .resource-title {
+    margin: 0px;
+    padding-left: 10px;
+    color: #8391a5;
+    
+    span.close{
+      float:right;
+      margin:2px 10px;
+    }
+  }
+  /*resource-recent*/
+  .resource-recent {
+    
+    ul{
+      position: relative;
+      margin:5px 0px;
+    }
+    
+    ul li{
+      padding-left: 15px;
+      line-height: 18px;
+      right: 0px !important;
+      left: 0px;
+      position: relative;
+      
+      &:hover {
+        background-color: $bgHover;
+        cursor: pointer;
+      }
+      
+      i.close {
+        margin-right:5px;
+        cursor: pointer;
+        vertical-align:middle;
+        color: #999999;
+      }
+      
+      span.open-files-name {
+        max-width: 180px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        line-height: 18px;
+        
+        i {
+          color: #999999;
+          max-width: 60px;
+          overflow: hidden;
+          display: inline-block;
+          vertical-align: middle;
+          text-overflow: ellipsis;
+          margin-top:-1px;
+        }
+      }
+      
+      span.status {
+        position:absolute;
+        right:10px;
+        top:1px;
+      }
+    }
+    
+    li.active {
+      background-color: $bgActive;
+    }
+  }
+  /*resource-project*/
+  .resource-project{
+    
+  }
+}

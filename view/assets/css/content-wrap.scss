@@ -1,0 +1,25 @@
+@import './config';
+
+.content-wrap {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  bottom: 25px;
+  left: 0;
+  
+  .resource-resize{
+    width: 1px;
+    height: 100%;
+    position: absolute;
+    left: 250px;
+    cursor: col-resize;
+    z-index: 21;
+    background-color:$bgColor;
+  }
+  
+  .resource-resize:hover{
+    -webkit-transform:scaleX(5);
+  }
+  
+}
+

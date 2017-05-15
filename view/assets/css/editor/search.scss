@@ -1,0 +1,131 @@
+@import '../config';
+.search-box {
+  position:absolute;
+  bottom:0px;
+  left:0px;
+  right:0px;
+  height: 160px;
+  display:flex;
+  z-index:20;
+  padding:5px 5px 0px 5px;
+  box-sizing:border-box;
+  
+  .el-form-item {
+    margin-bottom:6px;
+    div{
+      display:flex;
+    }
+    input {
+      background-color:inherit;
+      color:inherit;
+    }
+    .search-flag {
+      padding: 0px;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 0px;
+      margin-left: 1px;
+      background-color: rgb(102,102,102);
+      border-color: rgb(102,102,102);
+      font-size: 1rem;
+    }
+    .search-flag.active{
+      background-color:#3870bf;
+      border-color:#3870bf;
+    }
+  }
+  
+  .search-flag-row .el-form-item__content{
+    flex-direction: row-reverse;
+    padding-right: 10px;
+  }
+  
+  form {
+    width: 100%;
+  }
+  
+  .sb-input0 {
+    width:75%;
+    margin-right:2px;
+  }
+  
+  .sb-path {
+    width:85%;
+  }
+  
+  .sb-type {
+    width:inherit;
+    flex-grow:1;
+  }
+  
+  .sb-button0 {
+    flex-grow:1;
+  }
+}
+
+.search-result-box {
+  white-space: nowrap;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 20;
+  background: $bgColor;
+  
+  .search-result-bar {
+    height:2rem;
+    line-height:2rem;
+    overflow: hidden;
+    
+    .sr-stop {
+      width: 7rem;
+    }
+    
+    span.sr-span{
+      width:150px;
+      display:inline-block;
+      margin-left: 10px;
+    }
+  }
+  
+  .search-result-lists {
+    overflow: auto;
+    position: absolute;
+    top: 2rem;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+  }
+  
+  h5 {
+    font-weight: normal;
+    font-size: 1rem;
+    margin: 0px;
+    line-height: 22px;
+    opacity: 0.6;
+  }
+  
+  .highlight-result {
+    background-color:rgb(56,112,191);
+    color:#fff;
+  }
+  
+  .more-search-result {
+    text-align:left;
+  }
+  
+  ul {
+    font-size: 1 rem;
+    margin-left: 20px;
+    
+    li {
+      line-height: 22px;
+    }
+  }
+  
+}
+
+.search-flag-tooltip {
+  color:#000;
+}

@@ -1,0 +1,40 @@
+.dynamic-component {
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index: 100;
+  box-shadow: 0px 0px 5px 2px #ccc;
+  background-color:white;
+  color:#838ba5;
+  
+  &-top{
+    height:20px;
+    background-color: #eef1f6;
+    
+    i{
+      color: rgb(102,102,102);
+      font-size: 16px;
+      line-height: 20px;
+      float: right;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    i:hover{
+      color: rgb(102,102,102);
+    }
+  }
+  
+  &-box{
+    
+  }
+  
+  &-cover{
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}

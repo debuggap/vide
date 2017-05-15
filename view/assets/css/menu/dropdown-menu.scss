@@ -1,0 +1,98 @@
+/*
+* -----------------------------------------------
+* dropdown menu
+* -----------------------------------------------
+*/
+ul.dropdown-menu,ul.dropdown-submenu{
+	position: fixed;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	float: left;
+	min-width: 160px;
+	padding: 5px 0;
+	list-style: none;
+	background-color: #ffffff;
+	border-radius: 6px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+ul.dropdown-submenu{
+  display:none;
+}
+
+.dropdown-menu {
+  
+  li{
+  	position: relative;
+  }
+  
+  li a{
+  	display: flex;
+  	padding: 3px 10px 3px 20px;
+  	clear: both;
+  	font-weight: normal;
+  	line-height: 15px;
+  	color: #333333;
+  	white-space: nowrap;
+  	text-decoration: none;
+  	-webkit-user-drag: none;
+  }
+  
+  li a:hover{
+  	color: #ffffff !important;
+  	background-color: rgb(56,112,191);
+  }
+  
+  //disabled item
+  li.disable a,li.disable a:hover {
+    color:#ccc !important;
+    background-color: inherit ! important;
+  }
+  
+  /* for arrow when exist sub menu*/
+  a:hover span.arrow{
+  	border-left:7px solid #fff;
+  }
+  span.arrow{
+  	position: absolute;
+  	right: 5px;
+  	top:6px;
+  	border: 5px solid transparent;
+  	border-left:7px solid #000;
+  	width: 0px;
+  	height: 0px;
+  }
+  
+  span.hotkey-desc{
+    flex-grow: 1;
+    display: inline-block;
+    text-align: right;
+    padding-left:10px;
+  }
+  
+  .divider{
+  	height: 1px;
+  	margin: 5px 0;
+  	overflow: hidden;
+  	background-color: #e5e5e5;
+  }
+
+}
+
+//when sub-menu is open，his children should have other style
+.sub-menu.open {
+  .dropdown-submenu{
+  	top: -7px;
+  	display: block;
+  	left:200px;
+  }
+  /* when sub menu is open, the parent should be highlight*/
+  >a{
+  	color: #ffffff;
+  	background-color: #3870bf;
+  }
+  .arrow{
+  	border-left:7px solid #fff;
+  }
+}

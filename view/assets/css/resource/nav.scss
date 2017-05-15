@@ -1,0 +1,23 @@
+/*resource-nav*/
+.resource-nav{
+    height: 20px;
+    line-height: 20px;
+    padding: 0px 5px;
+}
+
+.resource-nav span{
+    border-radius: 7px;
+    padding: 0px 7px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.resource-nav span:hover{
+    background-color: rgb(145,162,195);
+    color: #fff;
+}
+
+.resource-nav span.active{
+    background-color: rgb(56,112,191);
+    color: #fff;
+}

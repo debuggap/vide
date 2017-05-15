@@ -1,0 +1,24 @@
+.status-wrap {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  height: 25px;
+  padding:0px 5px;
+  line-height:25px;
+  font-size:14px;
+  
+  .sw-tool {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding-right: 10px;
+    
+    button {
+      margin: 0px;
+      border-radius: 0px;
+      padding: 0px 5px;
+    }
+  }
+}

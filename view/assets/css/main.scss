@@ -1,0 +1,38 @@
+@CHARSET "UTF-8";
+@import './media';
+@import './config';
+@import './theme/monokai';
+
+html {
+  font-size:12px;
+  overflow:hidden;
+}
+html,body,ul,li,tr,td,h1,h2,h3,h4,h5{padding:0px;margin:0px;}
+body{
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  -webkit-user-select: none;
+  background-color:$bgColor;
+  color:$color;
+}
+ul,li{list-style:none;}
+
+@font-face { 
+  font-family: 'Glyphicons';
+  src: url('../fonts/glyphicons-halflings-regular.ttf');
+}
+
+/* scroll style for whole page*/
+::-webkit-scrollbar{
+    width:8px;
+    height:8px;
+}
+::-webkit-scrollbar-track-piece{
+    background-color:transparent;
+}
+::-webkit-scrollbar-thumb{
+    background-color:rgb(127,127,127);
+    border-radius:5px;
+}
+::-webkit-scrollbar-corner{
+  background-color:inherit;
+}

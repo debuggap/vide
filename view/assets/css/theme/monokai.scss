@@ -1,0 +1,59 @@
+html body.monokai {
+  $bgColor: #272822;
+  $color: #ccc;
+  $borderColor: #75715E;
+  $bgHover: rgb(32,32,32);
+  $bgActive: rgb(73,72,62);
+  
+  $btnBgColor: rgb(55,60,71);
+
+  background-color:$bgColor;
+  color:$color;
+  
+  // button {
+  //   background-color:$btnBgColor;
+  //   border-color:$btnBgColor;
+  //   color:$color;
+  //   &:hover,&:focus {
+  //     background-color:$btnBgColor;
+  //     border-color:$btnBgColor;
+  //     color:#fff;
+  //   }
+  // }
+  
+  .nav-head .dropdown a:hover {
+    color: #fff;
+  }
+  .nav-head::after,.nav-shortcut::after {
+    background-image: linear-gradient(0deg, transparent 0%, #75715E 100%);
+  }
+  
+  .resource-resize {
+    background-color:$bgColor;
+  }
+  
+  // resource-recent
+  .resource-recent {
+    li:hover {
+      background-color: $bgHover;
+    }
+    li.active {
+      background-color: $bgActive;
+    }
+  }
+  
+  .resource-tree {
+    &-node-leaf.active {
+      background-color: $bgActive;
+    }
+  }
+  
+  .search-result-box {
+    background:$bgColor;
+  }
+  
+  // param box
+  .editor-prompt-params {
+    background-color:$bgColor;
+  }
+}
