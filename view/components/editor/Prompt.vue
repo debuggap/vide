@@ -124,7 +124,7 @@ export default {
       if (!this.params) {
         return
       }
-      if ([13, 27].includes(e.keyCode)) {
+      if ([27].includes(e.keyCode)) {
         this.closePromptParams()
       } else if (e.keyCode === 188) {
         this.paramIndex++
@@ -151,12 +151,26 @@ export default {
       } else if (e.keyCode === 39) {
         this.closePromptLists()
         needPrevent = 1
-      } else if (e.keyCode === 13) {
-        this.select()
-        needPrevent = 1
       } else if (e.keyCode === 27) {
         this.close()
         needPrevent = 1
+      }
+      if (needPrevent) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    },
+    keypress (e) {
+      if (!this.lists.length && !this.params) {
+        return
+      }
+      let needPrevent = 0
+      if (e.keyCode === 13) {
+        if (this.lists.length) {
+          needPrevent = 1
+          this.select()
+        }
+        this.close()
       }
       if (needPrevent) {
         e.preventDefault()
@@ -230,6 +244,7 @@ export default {
     ulDom = $('.editor-prompt-box ul')[0]
     document.body.addEventListener('keydown', this.keydown, true)
     document.body.addEventListener('keyup', this.keyup, true)
+    document.body.addEventListener('keypress', this.keypress, true)
     Signal.receive('saveFile|editor/changeScroll', () => {
       this.close()
     })

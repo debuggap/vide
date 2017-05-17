@@ -7,18 +7,14 @@
 <script>
 import 'assets/css/editor/image-detail.scss'
 import {mapState} from 'vuex'
-import store from 'store'
 export default {
   name: 'image-detail',
-  data () {
-    let url = 'file://' + store.state.editor.currentFile + '?_t=' + new Date().getTime()
-    return {
-      url: url
-    }
-  },
   computed: {
     ...mapState({
-      showSearchBox: state => state.search.showSearchBox
+      showSearchBox: state => state.search.showSearchBox,
+      url: state => {
+        return 'file://' + state.editor.currentFile + '?_t=' + new Date().getTime()
+      }
     })
   },
   watch: {

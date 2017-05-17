@@ -107,6 +107,9 @@ function getTpathByPath (filepath) {
       break
     }
   }
+  if (!(node && node.path === filepath)) {
+    result = null
+  }
   if (result) {
     return result.join('.')
   } else {
