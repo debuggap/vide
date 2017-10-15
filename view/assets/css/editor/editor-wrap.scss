@@ -5,6 +5,13 @@
 	right: 0px;
 	bottom: 0px;
 	left: 251px;
+	display: flex;
+	flex-direction: column;
+	
+	.content-view {
+	  flex-grow: 1;
+	  position: relative;
+	}
 	
 	.ace_cursor{
     -webkit-transition:left 0.1s;

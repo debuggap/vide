@@ -64,19 +64,7 @@ export default {
       showSearchBox: state => state.search.showSearchBox
     })
   },
-  watch: {
-    showSearchBox () {
-      this.resetSize()
-    }
-  },
   methods: {
-    resetSize () {
-      if (this.showSearchBox) {
-        this.$refs.searchResultBox.style.bottom = '160px'
-      } else {
-        this.$refs.searchResultBox.style.bottom = '0px'
-      }
-    },
     reset () {
       this.loading = true
       this.matches = 0
@@ -129,7 +117,6 @@ export default {
     }
   },
   mounted () {
-    this.resetSize()
     signal.receive('appendSearchResult', (rt, reg) => {
       if (rt.EOF) {
         this.stopSearch()

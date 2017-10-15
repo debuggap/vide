@@ -28,6 +28,8 @@ import {addRecentFiles} from 'engine/recent_files'
 * ------------------------------
 */
 const filterOut = ['.svn', '.git', '.DS_Store']
+let runAutoFilesCheckBindThis
+let intervalInstance = null
 
 /*
 * @params tpath 用于查找节点
@@ -205,7 +207,7 @@ function toggleStatus ({tpath, filepath}) {
     folderExpandStatus.push(filepath)
   }
   folderExpandStatus.sort(function (a, b) {
-    return a.split(path.sep).length > b.split(path.sep).length
+    return a.split(path.sep).length > b.split(path.sep).length ? 1 : -1
   })
   // toggle expand status
   node.isexpand = !node.isexpand
@@ -215,7 +217,7 @@ function loadChildNodes ({tpath, filepath}) {
   getFiles(filepath, (lists) => {
     lists = filterList(lists)
     let node = getNodeByTpath.call(this, tpath)
-    if (checkFilesContent(node.childNodes, lists)) {
+    if (!node || node.path !== filepath || checkFilesContent(node.childNodes, lists)) {
       return
     }
     setChildNodes.call(this, tpath, lists)
@@ -313,6 +315,7 @@ function clickExpandEvent ({item, elem, tpath}) {
 // 单击文件，打开文件
 function clickLeaf ({item}) {
   store.dispatch('editor/setFile', {currentFile: item.path})
+  signal.send('filetype', item.path)
 }
 
 // 双击文件
@@ -359,28 +362,47 @@ export default {
   methods: {
     clickItem (event) {
       let target = event.target
-      let elem = target.closest('.resource-tree-node-leaf')
-      if (target.className.indexOf('resource-tree-folder-status') !== -1) {
-        elem = target.closest('.resource-tree-node-folder')
-        let tpath = elem.getAttribute('tpath')
-        let item = getNodeByTpath.call(this, tpath)
-        clickExpandEvent.call(this, {item, elem, tpath}, event)
-      } else if (elem) {
-        let tpath = elem.getAttribute('tpath')
-        let item = getNodeByTpath.call(this, tpath)
-        clickLeaf({item, elem}, event)
+      let elem = target.closest('.resource-tree-node-folder,.resource-tree-node-leaf')
+      if (!elem) {
+        return
       }
-    },
-    dblclickItem (event) {
-      let elem = event.target.closest('.resource-tree-node-folder,.resource-tree-node-leaf')
       let tpath = elem.getAttribute('tpath')
       let item = getNodeByTpath.call(this, tpath)
-      let onFolder = elem.className.indexOf('resource-tree-node-folder') !== -1
-      if (onFolder) {
-        clickExpandEvent.call(this, {item, elem, tpath}, event)
+      if (elem.className.indexOf('resource-tree-node-leaf') !== -1) {
+        clickLeaf({item, elem}, event)
       } else {
-        dblclickLeaf({item, elem}, event)
+        clickExpandEvent.call(this, {item, elem, tpath}, event)
       }
+      // let target = event.target
+      // let elem = target.closest('.resource-tree-node-leaf')
+      // if (target.className.indexOf('resource-tree-folder-status') !== -1) {
+      //   elem = target.closest('.resource-tree-node-folder')
+      //   let tpath = elem.getAttribute('tpath')
+      //   let item = getNodeByTpath.call(this, tpath)
+      //   clickExpandEvent.call(this, {item, elem, tpath}, event)
+      // } else if (elem) {
+      //   let tpath = elem.getAttribute('tpath')
+      //   let item = getNodeByTpath.call(this, tpath)
+      //   clickLeaf({item, elem}, event)
+      // }
+    },
+    dblclickItem (event) {
+      let elem = event.target.closest('.resource-tree-node-leaf')
+      if (!elem) {
+        return
+      }
+      let tpath = elem.getAttribute('tpath')
+      let item = getNodeByTpath.call(this, tpath)
+      dblclickLeaf({item, elem}, event)
+      // let elem = event.target.closest('.resource-tree-node-folder,.resource-tree-node-leaf')
+      // let tpath = elem.getAttribute('tpath')
+      // let item = getNodeByTpath.call(this, tpath)
+      // let onFolder = elem.className.indexOf('resource-tree-node-folder') !== -1
+      // if (onFolder) {
+      //   clickExpandEvent.call(this, {item, elem, tpath}, event)
+      // } else {
+      //   dblclickLeaf({item, elem}, event)
+      // }
     },
     contextmenu (event) {
       let elem = event.target.closest('.resource-tree-node-folder,.resource-tree-node-leaf')
@@ -403,12 +425,25 @@ export default {
         loadChildNodes.call(this, {tpath: tpath, filepath: filepath})
       }
     })
-    // only this resource-tree is active
+    // only this resource-tree is active, it means when we open `All Projects` pannel, this will not work
     if (this.active) {
       // load tree
       loadTree.call(this)
-      // window.runAutoFilesCheck = runAutoFilesCheck.bind(this)
-      setInterval(runAutoFilesCheck.bind(this), 2000)
+      // bind runAutoFilesCheck
+      runAutoFilesCheckBindThis = runAutoFilesCheck.bind(this)
+      intervalInstance = setInterval(runAutoFilesCheckBindThis, 1000)
+      // add blur and focus event
+      // this will improve performance
+      window.addEventListener('focus', () => {
+        runAutoFilesCheckBindThis()
+        intervalInstance = setInterval(runAutoFilesCheckBindThis, 1000)
+      }, false)
+      window.addEventListener('blur', () => {
+        if (intervalInstance) {
+          clearInterval(intervalInstance)
+          intervalInstance = null
+        }
+      }, false)
     }
   }
 }

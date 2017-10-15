@@ -42,11 +42,11 @@ const menu = {
     { name: lanObject.common.paste, func: 'navEvent.paste', bindKey: { mac: 'Command-V', win: 'Ctrl-V' } }
   ],
   'Find': [
-    { name: lanObject.navHead.findCurrent, func: 'find' },
+    { name: lanObject.navHead.findCurrent, func: 'navEvent.findInFile' },
     { name: lanObject.navHead.findNext, func: 'findnext' },
     { name: lanObject.navHead.findPrevious, func: 'findprevious' },
     { name: lanObject.navHead.findAll, func: 'findAll' },
-    { name: lanObject.navHead.replace, func: 'findAll' },
+    { name: lanObject.navHead.replace, func: 'navEvent.replaceInFile' },
     { name: lanObject.navHead.findInFiles, func: 'navEvent.findInProject' }, '|',
     { name: lanObject.navHead.findFiles, func: 'navEvent.findFiles' }
   ],
@@ -129,7 +129,7 @@ export default {
       } catch (e) {}
       if (recentProjects.length) {
         recentProjects = recentProjects.map((item) => {
-          return {name: item, text: item, func: 'resourceTreeMenuEvent.activeProject'}
+          return {name: item, text: item, func: 'navEvent.loadProject'}
         })
       }
       item.sub = recentProjects

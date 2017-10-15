@@ -1,9 +1,12 @@
 <template>
   <div class="content">
-    <div id="editor" class="editor-base" @contextmenu="contextmenu" ref="editor"></div>
-    <prompt></prompt>
-    <image-detail v-if="fileType === 'image'"></image-detail>
-    <search-result v-show="fileType === 'search'"></search-result>
+    <div class="content-view">
+      <div id="editor" class="editor-base" @contextmenu="contextmenu" ref="editor"></div>
+      <prompt></prompt>
+      <function-desc></function-desc>
+      <media-detail v-if="fileType === 'media'" :currentFile="currentFile"></media-detail>
+      <search-result v-show="fileType === 'search'"></search-result>
+    </div>
     <search v-if="showSearchBox"></search>
   </div>
 </template>
@@ -13,8 +16,9 @@ import ace from 'ace'
 import path from 'path'
 import Prompt from './Prompt'
 import Search from './Search'
-import ImageDetail from './ImageDetail'
+import MediaDetail from './MediaDetail'
 import SearchResult from './SearchResult'
+import FunctionDesc from './FunctionDesc'
 import {mapState} from 'vuex'
 import 'assets/css/editor/editor-wrap.scss'
 import store from 'store'
@@ -25,7 +29,11 @@ import {runInternalEvent} from 'engine/event'
 import {showPrompt} from 'engine/prompt'
 import {setEditor} from 'engine/editor'
 import {getFileModeByContent} from 'engine/file_mode'
+import {openExternal} from 'engine/native'
 import Signal from 'engine/signal'
+import debounce from 'lodash/debounce'
+import {getLastModify, getFileContent} from 'engine/helper/file_helper'
+import {confirm} from 'engine/message_box'
 
 // 变量
 let editor = null
@@ -67,18 +75,20 @@ function listenEventFromEditor (editor, session) {
   editor.selection.on('changeCursor', function (event, selection) {
     store.dispatch('anchorPosition', editor.getCursorPosition())
   })
-  editor.session.on('changeScrollTop', (top) => {
+  // 使用debounce来延迟设置值
+  editor.session.on('changeScrollTop', debounce((top) => {
     store.dispatch('scrollFile', {filepath: this.currentFile, scroll: {top: top}})
+    // 发送scroll事件，可以在滚动时，调用一些函数
     Signal.send('editor/changeScroll')
-  })
-  editor.session.on('changeScrollLeft', (left) => {
+  }, 500))
+  editor.session.on('changeScrollLeft', debounce((left) => {
     store.dispatch('scrollFile', {filepath: this.currentFile, scroll: {left: left}})
     Signal.send('editor/changeScroll')
-  })
+  }, 500))
   editor.on('paste', function (event) {
     let currentContent = editor.getValue()
     let basename = path.basename(store.state.editor.currentFile)
-    if (!currentContent && event.text && basename && !basename.includes('.')) {
+    if (!currentContent && event.text && !basename.includes('.')) {
       let fileMode = getFileModeByContent(event.text)
       if (!fileMode) {
         fileMode = 'text'
@@ -111,6 +121,7 @@ function showContextMenu (event) {
     }
   })
 }
+
 /*
 * ****************************************
 *               export
@@ -137,23 +148,22 @@ export default {
       }
     },
     currentFile () {
+      // 当文件改变时，重新设置显示内容
       if (this.fileType === 'text') {
         isChangingFile = true
         session.setValue(this.content)
         session.setMode('ace/mode/' + this.fileMode)
         editor.focus()
         isChangingFile = false
+        // 当文件是修改状态时，进行检查更新
+        if (this.fileStatus && this.fileStatus.status === 'M') {
+          this.checkContentUpdate()
+        }
+      } else if (this.fileType === 'system') {
+        openExternal(this.currentFile)
       } else if (!this.currentFile) {
         session.setValue('')
       }
-    },
-    showSearchBox () {
-      if (this.showSearchBox) {
-        this.$refs.editor.style.bottom = '160px'
-      } else {
-        this.$refs.editor.style.bottom = '0px'
-      }
-      editor.resize()
     },
     fileStatus () {
       if (this.fileType !== 'text') {
@@ -180,18 +190,69 @@ export default {
     listenEventFromEditor.call(this, editor, session)
     // set editor
     setEditor()
+    // subscribe vuex event, so that resize the editor window
+    store.subscribe((mutation, state) => {
+      if (['SEARCHBOX_SHOW', 'SEARCHBOX_CLOSE'].includes(mutation.type)) {
+        this.$nextTick(() => {
+          editor.resize()
+        })
+      }
+    })
+    // 检查更新内容的框是否显示
+    this.updateConfirmShowing = false
+    // 当窗口聚焦时，检查文件是否需要update
+    window.addEventListener('focus', () => {
+      this.checkContentUpdate()
+    }, false)
   },
   components: {
     Prompt,
     Search,
-    ImageDetail,
-    SearchResult
+    MediaDetail,
+    SearchResult,
+    FunctionDesc
   },
   methods: {
     contextmenu (e) {
       showContextMenu(e)
       e.preventDefault()
       e.stopPropagation()
+    },
+    /**
+    * 检查文件是否需要更新
+    */
+    checkContentUpdate () {
+      // 不符合的，不进行更新
+      if (this.fileType !== 'text' || !this.fileStatus || this.fileStatus.status === 'N') {
+        return
+      }
+      // 如果已经有弹框了
+      if (this.updateConfirmShowing) {
+        return
+      }
+      // 获取文件的最后修改时间，查看是否需要重新reload
+      getLastModify(this.currentFile).then((lastModify) => {
+        let item = store.state.resourceRecent.currentFiles[this.currentFile]
+        if (item && item.lastModify < lastModify) {
+          this.updateConfirmShowing = true
+          confirm(lanObject.editor.modifyReloadTips, path.basename(this.currentFile)).then(() => {
+            // 如果单击确定更新，则读取内容进行覆盖
+            getFileContent(this.currentFile).then((content) => {
+              content = content.toString()
+              // 设置内容
+              session.setValue(content)
+              // 更新缓存
+              store.dispatch('resourceRecent/setLastModify', {currentFile: this.currentFile, con: content, lastModify, force: true, status: ''})
+            }).catch((e) => {
+              console.log(e)
+            })
+            this.updateConfirmShowing = false
+          }).catch(() => {
+            store.dispatch('resourceRecent/setLastModify', {currentFile: this.currentFile, lastModify, force: true})
+            this.updateConfirmShowing = false
+          })
+        }
+      })
     }
   }
 }

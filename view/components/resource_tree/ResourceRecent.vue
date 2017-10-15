@@ -129,8 +129,9 @@ function initList () {
       basename = lists[i]
       dirname = ''
     } else {
-      basename = path.win32.basename(lists[i])
-      dirname = path.dirname(lists[i]).split(path.sep).pop()
+      let filepath = lists[i].replace(store.state.projectPath, '').replace(/^\//, '')
+      basename = path.basename(filepath)
+      dirname = path.dirname(filepath).split(path.sep).slice(-2).join(' / ').replace(/^\./, '')
     }
     let className = lists[i] === this.currentFile ? 'active' : ''
     let status = this.currentFiles[lists[i]]['status']
@@ -139,7 +140,7 @@ function initList () {
       <i class="el-icon-circle-close close"></i>
       <span class="open-files-name">
         <i>${dirname}</i>&nbsp;
-        ${basename}
+        <span class="ofn-basename">${basename}</span>
       </span>
       <span class="status">${status}</span>
     </li>`

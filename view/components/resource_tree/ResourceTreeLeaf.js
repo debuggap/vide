@@ -1,6 +1,15 @@
 export default {
   props: ['tpath', 'node'],
   name: 'resource-tree-leaf',
+  methods: {
+    dragstart (node, e) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('path', node.path)
+      let ele = e.target
+      e.dataTransfer.setDragImage(ele, ele.offsetWidth / 2, ele.offsetHeight / 2)
+      e.stopPropagation()
+    }
+  },
   render (h) {
     let currentFile = this.$store.state.editor.currentFile
     let node = this.node
@@ -16,7 +25,7 @@ export default {
         <div class={className} unselectable="on" tpath={this.tpath}>
           {spaceComps}
           <a href="javascript:void(0);" hidefocus>
-            <span>{node.text}</span>
+            <span draggable="true" onDragstart={() => this.dragstart(node, event)}>{node.text}</span>
           </a>
         </div>
       </li>

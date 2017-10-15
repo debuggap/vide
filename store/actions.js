@@ -3,6 +3,7 @@ import {saveRecentProjects} from 'engine/project'
 
 export const hashchange = ({ commit, dispatch, rootState }, { projectName, projectPath }) => {
   saveRecentProjects(projectName)
+  document.title = `VIDE(${nw.App.manifest.version})/${projectName}`
   commit(types.HASH_CHANGE, { projectName, projectPath })
 }
 

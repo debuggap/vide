@@ -1,10 +1,10 @@
 @import '../config';
 .search-box {
-  position:absolute;
+  // position:absolute;
   bottom:0px;
   left:0px;
   right:0px;
-  height: 160px;
+  // height: 160px;
   display:flex;
   z-index:20;
   padding:5px 5px 0px 5px;
@@ -19,6 +19,17 @@
       background-color:inherit;
       color:inherit;
     }
+    
+    // 
+    .ext-button {
+      padding: 0px 10px;
+      min-width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 0px;
+      margin-left: 1px;
+      font-size: 1rem;
+    }
+    
     .search-flag {
       padding: 0px;
       width: 1.6rem;
@@ -35,9 +46,16 @@
     }
   }
   
-  .search-flag-row .el-form-item__content{
-    flex-direction: row-reverse;
-    padding-right: 10px;
+  .search-flag-row {
+    height: 20px;
+    position: relative;
+    
+    .el-form-item__content{
+      position: absolute;
+      right: 10px;
+      top: 0px;
+      z-index: 999;
+    }
   }
   
   form {

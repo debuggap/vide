@@ -4,13 +4,15 @@
       <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
         <el-menu-item index="1">Search</el-menu-item>
         <el-menu-item index="2">Installed</el-menu-item>
-        <el-menu-item index="3">Tool</el-menu-item>
+        <el-menu-item index="3">Installer</el-menu-item>
+        <el-menu-item index="4">Dev Tool</el-menu-item>
       </el-menu>
     </div>
     <div class="package-manage-content">
       <search v-if="currentIndex == 1"></search>
       <installed v-else-if="currentIndex == 2"></installed>
-      <tool v-else ></tool>
+      <installer v-else-if="currentIndex == 3" ></installer>
+      <dev-tool v-else></dev-tool>
     </div>
   </div>
 </template>
@@ -19,7 +21,8 @@
 import Vue from 'vue'
 import Installed from './Installed'
 import Search from './Search'
-import Tool from './Tool'
+import Installer from './Installer'
+import DevTool from './DevTool'
 import {Menu, MenuItem} from 'element-ui'
 Vue.use(Menu)
 Vue.use(MenuItem)
@@ -38,7 +41,8 @@ export default {
   components: {
     Installed,
     Search,
-    Tool
+    Installer,
+    DevTool
   }
 }
 </script>

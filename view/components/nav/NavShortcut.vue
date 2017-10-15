@@ -35,11 +35,12 @@ export default {
   mounted () {
     let instance = null
     let longTap = false
-    $('.nav-shortcut').on('mousedown', '.nav-shortcut-item', (e) => {
+    let self = this
+    $('.nav-shortcut').on('mousedown', '.nav-shortcut-item', function (e) {
       instance = setTimeout(() => {
         instance = null
         longTap = true
-        this.longTap($(e.target).index())
+        self.longTap($(this).index())
       }, 1000)
     })
     $('.nav-shortcut').on('mouseup', '.nav-shortcut-item', (e) => {
@@ -49,9 +50,9 @@ export default {
         longTap = false
       }
     })
-    $('.nav-shortcut').on('click', '.nav-shortcut-item', (e) => {
+    $('.nav-shortcut').on('click', '.nav-shortcut-item', function (e) {
       if (!longTap) {
-        this.launch($(e.target).index())
+        self.launch($(this).index())
       }
     })
   }

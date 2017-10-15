@@ -79,6 +79,10 @@ export default {
 
 <style lang="scss" scoped>
 .installed {
+  ul {
+    height: 510px;
+    overflow: auto;
+  }
   li{
     border: 1px solid #d1dbe5;
     border-radius: 4px;

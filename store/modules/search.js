@@ -6,7 +6,8 @@ import * as types from '../mutationTypes'
 const state = {
   showSearchBox: false,
   params: {
-    path: ''
+    path: '',
+    type: ''
   }
 }
 

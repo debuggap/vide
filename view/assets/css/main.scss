@@ -2,6 +2,7 @@
 @import './media';
 @import './config';
 @import './theme/monokai';
+@import './element-theme/index.css';
 
 html {
   font-size:12px;
@@ -15,6 +16,9 @@ body{
   color:$color;
 }
 ul,li{list-style:none;}
+.hidden {
+  display:none ! important;
+}
 
 @font-face { 
   font-family: 'Glyphicons';

@@ -2,9 +2,9 @@
 <div>
   <div class="editor-prompt-box" v-show="lists.length">
     <ul>
-      <li @click="select(index)" :key="index" v-for="(list, index) in lists" :class="{active: index === currentIndex}"><span class="editor-prompt-box-value" v-html="highlight(list)"></span><span v-if="list.file" class="editor-prompt-box-file">{{list.file}}</span></li>
+      <li @click="select(index)" :key="index" v-for="(list, index) in lists" :class="{active: index === currentIndex}"><span class="editor-prompt-box-value" v-html="highlight(list)"></span><span v-if="list.info && index === currentIndex" class="editor-prompt-box-tip">{{list.info}}</span></li>
     </ul>
-    <div class="editor-prompt-box-info">Use `esc` to close</div>
+    <div class="editor-prompt-box-bottom">Use `esc` to close</div>
   </div>
   <div v-if="params" class="editor-prompt-params">
     <span class="editor-prompt-params-box">
@@ -51,7 +51,7 @@ function setPromptPosition () {
     y -= cursorHeight + promptBoxDom.clientHeight + 3
   }
   $('.editor-prompt-box').css({left: x + 'px', top: y + 'px'})
-  $('.editor-prompt-box-info')[0].focus()
+  $('.editor-prompt-box-bottom')[0].focus()
 }
 
 function setParamsPosition () {
@@ -194,8 +194,35 @@ export default {
       if (item) {
         let _editor = editor()
         let range = _editor.selection.getRange()
+        // 用户删除之前的已经输出的字符串
         range.start.column -= this.typedStr.length
-        _editor.session.replace(range, item.value ? item.value : item)
+        // 获取当前行内容
+        let currentLine = _editor.session.getLine(range.start.row)
+        let column = currentLine.match(/^\s*/)[0].length
+        // 需要替换的值
+        let replaceValue = item.value ? item.value : (item.name ? item.name : item)
+        // 如果位置不在行开头,添加的是`block`值，增加相应的移动位置
+        if (column && /\n/.test(replaceValue)) {
+          let tabCount = column / store.state.config.editor.tabsize
+          tabCount = Math.round(tabCount)
+          if (tabCount) {
+            replaceValue = replaceValue.replace(/\n/g, function () {
+              return '\n' + new Array(tabCount).fill('\t').join('')
+            })
+            let v = new Array(store.state.config.editor.tabsize).fill(' ').join('')
+            replaceValue = replaceValue.replace(/\t/g, v)
+          }
+        }
+        _editor.session.replace(range, replaceValue)
+        // move cursor if needed
+        if (item.moveAction) {
+          setTimeout(() => {
+            let vertical = item.moveAction[0]
+            vertical && (vertical < 0 ? _editor.navigateUp(Math.abs(vertical)) : _editor.navigateDown(vertical))
+            let horizontal = item.moveAction[1]
+            horizontal && (horizontal < 0 ? _editor.navigateLeft(Math.abs(horizontal)) : _editor.navigateRight(horizontal))
+          }, 100)
+        }
         // show params
         if (item.value && item.params && item.params.length) {
           // editor的替换都是异步的,先同步异步显示参数，在设置params，用nextTick
@@ -230,6 +257,10 @@ export default {
       if (this.params && this.params[index]) {
         let param = this.params[index]
         let _editor = editor()
+        // if param is not the first one, add space
+        if (index !== 0) {
+          _editor.insert(' ')
+        }
         _editor.insert(param)
         let range = _editor.selection.getRange()
         range.start.column -= param.length

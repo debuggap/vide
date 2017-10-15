@@ -15,6 +15,7 @@
     cursor: col-resize;
     z-index: 21;
     background-color:$bgColor;
+    transform:translate3d(0px, 0px, 0px) scaleX(2);
   }
   
   .resource-resize:hover{

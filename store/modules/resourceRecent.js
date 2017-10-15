@@ -1,4 +1,6 @@
 import * as types from '../mutationTypes'
+import {getLastModify} from 'engine/helper/file_helper'
+import {getFileModeByContent} from 'engine/file_mode'
 import Vue from 'vue'
 
 // store recent lists in the localStorage
@@ -66,8 +68,9 @@ const actions = {
       }, 50)
     }
   },
-  ['saveFile'] ({commit, state}, filepath) {
-    commit(types.RECENT_RECORD_MODIFICATION, {filepath, status: ''})
+  async ['saveFile'] ({commit, state}, filepath) {
+    let lastModify = await getLastModify(filepath)
+    commit(types.RECENT_RECORD_MODIFICATION, {filepath, status: '', lastModify})
   },
   ['saveNewFile'] ({commit, state}, {oldPath, realPath}) {
     commit(types.RECENT_REPLACE_PATH, {oldPath, realPath})
@@ -79,8 +82,13 @@ const actions = {
     }
     let name = getUntitledName()
     if (name) {
-      commit(types.RECENT_ADD_ITEM, {filepath: name, con: '', status: 'N'})
-      commit(types.FILE_CREATE, {filepath: name, con: obj.con ? obj.con : ''})
+      commit(types.RECENT_ADD_ITEM, {filepath: name, con: obj.con ? obj.con : '', status: 'N'})
+      let fileMode = 'text'
+      if (obj.con) {
+        fileMode = getFileModeByContent(obj.con)
+        fileMode = fileMode || 'text'
+      }
+      commit(types.FILE_CREATE, {filepath: name, con: obj.con ? obj.con : '', fileMode})
     }
   },
   ['scrollFile'] ({commit, state}, {filepath, scroll}) {
@@ -89,6 +97,19 @@ const actions = {
   ['anchorPosition'] ({commit, state, rootState}, anchor) {
     if (state.lists.includes(rootState.editor.currentFile)) {
       commit(types.RECENT_RECORD_MODIFICATION, {filepath: rootState.editor.currentFile, anchor})
+    }
+  },
+  /*
+  * 设置文件的lastModify
+  * @param {Boolean} force: 是否强制设置时间
+  */
+  async ['resourceRecent/setLastModify'] ({commit, state}, {currentFile, con, force, lastModify, status}) {
+    let item = state.currentFiles[currentFile]
+    if (item && (force || !item.lastModify)) {
+      if (!lastModify) {
+        lastModify = await getLastModify(currentFile)
+      }
+      commit(types.RECENT_RECORD_MODIFICATION, {filepath: currentFile, lastModify, con, status})
     }
   }
 }
@@ -107,7 +128,14 @@ const mutations = {
     // 存储当前文件的一些信息
     let currentFiles = {}
     for (let i = 0; i < lists.length; i++) {
-      currentFiles[lists[i]] = {status: '', con: undefined, scroll: {left: 0, top: 0}, anchor: {row: 0, colomn: 0}, stack: {undo: [], redo: []}}
+      currentFiles[lists[i]] = {
+        status: '',
+        lastModify: null,
+        con: undefined,
+        scroll: {left: 0, top: 0},
+        anchor: {row: 0, colomn: 0},
+        stack: {undo: [], redo: []}
+      }
     }
     state.currentFiles = currentFiles
   },
@@ -136,7 +164,14 @@ const mutations = {
   [types.RECENT_ADD_ITEM] (state, {filepath, status, con}) {
     if (typeof filepath === 'string' && !state.lists.includes(filepath)) {
       state.lists.push(filepath)
-      Vue.set(state.currentFiles, filepath, {status: status, con: con, anchor: {row: 0, colomn: 0}, scroll: {left: 0, top: 0}, stack: {undo: [], redo: []}})
+      Vue.set(state.currentFiles, filepath, {
+        status: status,
+        con: con,
+        lastModify: null,
+        anchor: {row: 0, colomn: 0},
+        scroll: {left: 0, top: 0},
+        stack: {undo: [], redo: []}
+      })
     }
   },
   [types.RECENT_DELETE_ITEM] (state, item) {
@@ -147,9 +182,12 @@ const mutations = {
       delete state.currentFiles[item]
     }
   },
-  [types.RECENT_RECORD_MODIFICATION] (state, {filepath, status, con, scroll, stack, anchor}) {
+  [types.RECENT_RECORD_MODIFICATION] (state, {filepath, status, con, scroll, stack, anchor, lastModify}) {
     if (!state.currentFiles[filepath]) {
       return
+    }
+    if (lastModify !== undefined) {
+      state.currentFiles[filepath]['lastModify'] = lastModify
     }
     if (status !== undefined) {
       if (status && !state.currentFiles[filepath]['status']) {
